@@ -1,8 +1,5 @@
-import axios from "axios";
-/* eslint-disable */
-// const API_ENDPOINT = "https://mawj.herokuapp.com/";
-const API_ENDPOINT = "http://localhost:8080/manga/";
-// import store from "@/state/store";
+import axios from "axios"; 
+const API_ENDPOINT = "http://localhost:8080/manga/"; 
 const client = axios.create({
   baseURL: API_ENDPOINT,
   withCredentials: false,

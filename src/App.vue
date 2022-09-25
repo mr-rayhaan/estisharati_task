@@ -13,7 +13,7 @@
         </template>
       </scrollable-row>
     </section>
-    <loading v-if="moviesList.length <= 0" />
+    <loading v-if="mangasList.length <= 0" />
     <app-footer />
 
     <MangaModal v-if="modalShow" :selectedManga="selectedManga" @close-modal="closeModal"></MangaModal>
@@ -32,7 +32,7 @@ import tmdbService from "./service/tmdb.service";
 import * as ApiGenerate from "@/config/ApiGenerate";
 import { Mangas } from "./config/api/Mangas";
 import axios from "axios";
-/* eslint-disable */
+
 export default {
   name: "App",
   components: {
@@ -46,7 +46,7 @@ export default {
   },
   created() {
     window.addEventListener("scroll", this.scrollListener);
-    this.loadPage();
+    // this.loadPage();
   },
   mounted() {
     this.loadMyPage();
@@ -88,24 +88,6 @@ export default {
       this.modalShow = false;
       this.selectedManga = null;
     },
-    showPopup(data) {
-      this.showClass = data.srcElement.classList[0];
-      console.log(document.getElementsByClassName(this.showClass)[0].style);
-      var popupClass = `title-popup-${this.showClass.slice(
-        12,
-        this.showClass.length
-      )}`;
-      // document.getElementsByClassName(popupClass)[0].style.transitionDelay = "3s";
-      document.getElementsByClassName(popupClass)[0].style.display = "block";
-    },
-    hidePopup() {
-      var popupClass = `title-popup-${this.showClass.slice(
-        12,
-        this.showClass.length
-      )}`;
-      document.getElementsByClassName(popupClass)[0].style.display = "none";
-      this.$refs["my-modal"].hide();
-    },
     randomRange() {
       var random = Math.floor(Math.random() * this.mangasList.length);
       console.log('randomRange')
@@ -140,29 +122,14 @@ export default {
           break;
       }
     },
-    loadPage() {
-      setTimeout(async () => {
-        this.moviesList = await tmdbService.getHomeList();
-        // console.log('moviesList', this.moviesList);
-        this.featuredMovie = await tmdbService.getMovieInfo(70523, "tv");
-      }, 1500);
-    },
+    /* eslint-disable */
     async loadMyPage() {
-      // console.log(Mangas);
       var response;
       try {
         const api = Mangas.getMangasList;
-        // api.params = {
-        //   c: "catalog",
-        //   limit: 30,
-        //   start: 0,
-        // }
-        // response = await ApiGenerate.generateAPI(api);
         response = await axios.get(
           "http://localhost:8080/manga/get_lastest.php?c=catalog&limit=100&start=0"
         );
-        // console.log('response', response);
-        // console.log('data', response.data);
         this.mangasList = response.data;
         console.log('mangasList', this.mangasList);
         this.featuredManga = this.mangasList[
@@ -188,9 +155,6 @@ export default {
     },
     scrollListener() {
       this.scrolled = window.scrollY > 10;
-    },
-    movieImage(movie) {
-      return `https://image.tmdb.org/t/p/w300${movie.poster_path}`;
     },
   },
   destroyed() {

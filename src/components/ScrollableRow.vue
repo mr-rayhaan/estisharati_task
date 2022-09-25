@@ -2,13 +2,12 @@
   <div class="scrollableRow" v-if="list">
     <h2>{{title}}</h2>
 
-    <div class="scrollableRow--arrowleft" @click="handleLeftArrow">&#9664;</div>
+    <div class="scrollableRow--arrowleft" @click="handleLeftArrow" v-show="scrollX < 0">&#9664;</div>
     <div class="scrollableRow--arrowright" @click="handleRightArrow">&#x25B6;</div>
 
     <div class="scrollableRow--listarea">
       <div class="scrollableRow--list" :style="[listStyle]">
-        <div class="scrollableRow--item"
-          v-for="item in list" :key="item.id">
+        <div class="scrollableRow--item" v-for="item in list" :key="item.id">
           <slot v-bind:item="item"></slot>
         </div>
       </div>
@@ -43,13 +42,15 @@ export default {
     }
   },
   methods: {
-    handleLeftArrow() {
+    handleLeftArrow(event) {
       const userScreenSize = Math.round(window.innerWidth / 2);
       let roll = this.scrollX + userScreenSize;
       if (roll > 0) {
         roll = 0;
       }
       this.scrollX = roll;
+      console.log("scrollX left", this.scrollX)
+
     },
     handleRightArrow() {
       let listWidth = this.list.length * 150;
@@ -61,6 +62,7 @@ export default {
         roll = remainingSpace - padding * 2;
       }
       this.scrollX = roll;
+      console.log("scrollX right", this.scrollX)
     }
   }
 };
