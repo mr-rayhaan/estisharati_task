@@ -4,35 +4,26 @@
     <!-- <featured-movie v-if="featuredMovie" :item="featuredMovie"/> -->
     <featured-manga v-if="featuredManga" :item="featuredManga" />
     <section class="lists">
-      <scrollable-row v-for="(item, index) in categories" :key="index" :title="item" :list="randomRange()">
+      <scrollable-row v-for="(item, index) in categoriesHomePage()" :key="index" :title="item"
+        :list="indexedRange(item)">
         <template v-slot="props">+
           <img v-if="props.item.img" :src="props.item.img" :alt="props.item.title"
-            :class="listItem(item, props.item.id)" @click="showModal" />
+            :class="listItem(item, props.item.id)" @click="showModal(props.item)" />
 
-          <movie-card :category="item" :id="props.item.id" :title="props.item.title" :year="props.item.release_date"
-            :cover="movieImage(props.item)" :rank="props.item.vote_average" :actors="[]"
-            :watchers="props.item.popularity" :likes="props.item.vote_count" />
         </template>
       </scrollable-row>
     </section>
     <loading v-if="moviesList.length <= 0" />
     <app-footer />
 
-
-    <b-modal ref="my-modal" hide-footer title="Using Component Methods">
-      <div class="d-block text-center">
-        <h3>Hello From My Modal!</h3>
-      </div>
-    </b-modal>
-
-
+    <MangaModal v-if="modalShow" :selectedManga="selectedManga" @close-modal="closeModal"></MangaModal>
   </div>
 </template>
 
 <script>
 import AppHeader from "./components/AppHeader";
 import AppFooter from "./components/AppFooter";
-// import FeaturedMovie from "./components/FeaturedMovie";
+import MangaModal from "./components/MangaModal";
 import FeaturedManga from "./components/FeaturedManga";
 import ScrollableRow from "./components/ScrollableRow";
 import Loading from "./components/Loading";
@@ -47,7 +38,7 @@ export default {
   components: {
     AppHeader,
     AppFooter,
-    // FeaturedMovie,
+    MangaModal,
     FeaturedManga,
     MovieCard,
     ScrollableRow,
@@ -65,28 +56,37 @@ export default {
     moviesList: [],
     mangasList: [],
     categories: [
-      "Trending",
-      "Newly Added",
-      "Actions",
-      "Romance",
-      "Comedy",
-      "Sci-Fi",
     ],
+    genres: null,
     featuredMovie: null,
     featuredManga: null,
     randomStart: null,
     endValue: 0,
     showClass: null,
+    modalShow: false,
+    selectedManga: null,
   }),
+  computed: {
+  },
   methods: {
+
+    categoriesHomePage() {
+      return this.categories.slice(0, 6);
+    },
     listItem(item, id) {
       // console.log("item", item, "id", id);
       return `title-image-${item.replace(/\s/g, "")}-${id}`;
     },
-    showModal() {
-      console.log('show modal');
-
-      this.$refs['my-modal'].show()
+    showModal(data) {
+      console.log("show modal", data);
+      this.modalShow = !this.modalShow;
+      this.selectedManga = data;
+      // this.$refs['my-modal'].show()
+    },
+    closeModal() {
+      console.log('close modal')
+      this.modalShow = false;
+      this.selectedManga = null;
     },
     showPopup(data) {
       this.showClass = data.srcElement.classList[0];
@@ -97,7 +97,6 @@ export default {
       )}`;
       // document.getElementsByClassName(popupClass)[0].style.transitionDelay = "3s";
       document.getElementsByClassName(popupClass)[0].style.display = "block";
-
     },
     hidePopup() {
       var popupClass = `title-popup-${this.showClass.slice(
@@ -105,14 +104,41 @@ export default {
         this.showClass.length
       )}`;
       document.getElementsByClassName(popupClass)[0].style.display = "none";
-      this.$refs['my-modal'].hide()
+      this.$refs["my-modal"].hide();
     },
     randomRange() {
       var random = Math.floor(Math.random() * this.mangasList.length);
+      console.log('randomRange')
       return this.mangasList.slice(random, random + 10);
     },
     sliceList() {
       return this.mangasList.slice(20, 30);
+    },
+    indexedRange(item) {
+      var regExp = /[a-zA-Z]/g;
+      // var testString = "john";
+
+      // if(regExp.test(testString)){}
+      switch (item) {
+        case 'Action':
+          return this.mangasList.filter((x) => { return x.genres.indexOf(item) > -1 ? item : null });
+          break;
+        case 'Adventure':
+          return this.mangasList.filter((x) => { return x.genres.indexOf(item) > -1 ? item : null });
+          break;
+        case 'Martial':
+          return this.mangasList.filter((x) => { return x.genres.indexOf(item) > -1 ? item : null });
+          break;
+        case 'Arts':
+          return this.mangasList.filter((x) => { return x.genres.indexOf(item) > -1 ? item : null });
+          break;
+        case 'Drama':
+          return this.mangasList.filter((x) => { return x.genres.indexOf(item) > -1 ? item : null });
+          break;
+        case 'Romance':
+          return this.mangasList.filter((x) => { return x.genres.indexOf(item) > -1 ? item : null });
+          break;
+      }
     },
     loadPage() {
       setTimeout(async () => {
@@ -138,9 +164,24 @@ export default {
         // console.log('response', response);
         // console.log('data', response.data);
         this.mangasList = response.data;
+        console.log('mangasList', this.mangasList);
         this.featuredManga = this.mangasList[
           Math.floor(Math.random() * this.mangasList.length)
         ];
+        this.genres = new Set();
+        for (var i = 0; i < this.mangasList.length; i++) {
+          var tempList = [];
+          tempList = this.mangasList[i].genres.split(" ");
+
+          for (let element of tempList) {
+            element = element.toLowerCase().replace(/[^a-z]/g, '');
+            if (element !== "") {
+              this.genres.add(element.charAt(0).toUpperCase() + element.slice(1));
+              this.categories.push(element.charAt(0).toUpperCase() + element.slice(1));
+            }
+          }
+        }
+        console.log(this.genres);
       } catch (error) {
         console.log("error", error);
       }

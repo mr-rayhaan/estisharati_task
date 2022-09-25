@@ -18,8 +18,8 @@
             </div>
             <div class="featured--description">{{description}}</div>
             <div class="featured--buttons">
-              <a href="https://google.com" class="featured--watch">► Read</a>
-              <a href="https://google.com" class="featured--infobtn">+ Information</a>
+              <a href="" class="featured--watch">► Read</a>
+              <a href="" class="featured--infobtn">+ Information</a>
             </div>
             <div class="featured--genres">
               <strong>Genres:</strong>
