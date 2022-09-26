@@ -1,0 +1,14 @@
+$theme-red: (
+  name: 'theme-red',
+  'primary': #f00,
+  'secondry': #f66
+);
+
+$theme-blue: (
+  name: 'theme-blue',
+  'primary': #00f,
+  'secondry': #66f
+);
+
+$themes: $theme-red, $theme-blue;
+$themeNames: 'theme-red', 'theme-blue' 
